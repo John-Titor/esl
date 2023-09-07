@@ -15,6 +15,9 @@ then
 elif [ -x /usr/local/bin/llc ]
 then
   LLVM=/usr/local/bin
+elif [ -x /opt/homebrew/Cellar/llvm/16.0.6/bin/llc ]
+then
+  LLVM=/opt/homebrew/Cellar/llvm/16.0.6/bin
 else
    echo "Can't find LLVM executable llc in /bin or /usr/bin or /usr/local/bin or /usr/local/opt/llvm/bin!"
    echo "If it is somewhere else, fix the script 'llvm'."
@@ -43,12 +46,13 @@ case $ARCH in
     i686)   ARCH=x86;;
     x86_64) ARCH=x86-64;;
     s390x)  ARCH=systemz;;
+    arm64)  ARCH=aarch64;;
     armv7l) ARCH=arm; CPU="-mcpu=cortex-a7"
 	    ATTR="-mattr=-neon,-vfp4,+vfp3,+d16";;
 esac
 case `uname -s` in
   Darwin)
-    TRIPLE="-mtriple=x86_64-apple-darwin" ;;
+    TRIPLE="-mtriple=arm64-apple-darwin" ;;
 esac
 shift $(($OPTIND-1))
 file=$1

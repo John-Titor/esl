@@ -6,7 +6,7 @@ SRC =	main.esl lex.esl type1.esl type2.esl symb1.esl symb2.esl \
 # LLVM is a program or script that runs the LLVM backend
 # to convert a .ll into a .s for the target machine.
 LLVM=./llvm
-LLVMFLAGS= -I		# no inlining to ease debugging
+#LLVMFLAGS= -I		# no inlining to ease debugging
 LLVMVERSION= $(shell $(LLVM) -V)
 ESLCFLAGS= -L$(LLVMVERSION)
 
@@ -15,17 +15,22 @@ GCC=	cc
 
 ARCH:= $(shell uname -m)
 ifeq ($(ARCH), x86_64)
-  CFLAGS=
-  ARCH=x86-64
+	CFLAGS=
+	ARCH=x86-64
 else
-  ifeq ($(ARCH), i686)
-    CFLAGS=-m32
-    ARCH=x86
-  else
-    ifeq ($(ARCH), s390x)
-      CFLAGS="-march=z10"
-    endif
-  endif
+	ifeq ($(ARCH), i686)
+		CFLAGS=-m32
+		ARCH=x86
+	else
+		ifeq ($(ARCH), s390x)
+			CFLAGS="-march=z10"
+		else
+			ifeq ($(ARCH), arm64)
+				CFLAGS=
+				ARCH=aarch64
+			endif
+		endif
+	endif
 endif
 
 
@@ -33,8 +38,8 @@ BOOT=main-start-$(ARCH).ll
 
 boot:	eslc0 eslc1 eslc2 eslc3
 	@if cmp eslc3 eslc2; then \
-	   echo "Success"; \
-	   rm main-start.s main.s main.ll; \
+		 echo "Success"; \
+		 rm main-start.s main.s main.ll; \
 	else echo "Bootstrap failed"; \
 	fi
 
